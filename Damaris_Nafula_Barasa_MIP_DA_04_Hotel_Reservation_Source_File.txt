@@ -1,0 +1,377 @@
+HOTEL RESERVATION ANALYSIS USING SQL
+
+In this project I used SQL to answer questions related to the Hotel Reservation data set.To conduct the analysis, I used IBM Db2. 
+
+Question 1.
+What is the total number of reservations in the data set?
+To count the total number of reservations in the data set, I used the following query which counts all the rows in the table, which actually represents the reservations
+=======================================================================================
+SELECT COUNT(*) AS total_reservations
+FROM HOTEL_RESERVATION_DATASET
+
+Run time (seconds): 0.005    
+Status            : succeeded
+
+TOTAL_RESERVATIONS
+------------------
+               700
+
+Question 2.
+Which meal plan is the most popular among guests?
+To get the most popular meal plan, I used this query to count the number of times each meal occurs in the data set, group them, and finally order them in a descending order in terms of their popularity. The LIMIT 1 at the end the most popular meal plan is returned.
+=======================================================================================
+SELECT type_of_meal_plan, COUNT(*) AS total_guests
+FROM HOTEL_RESERVATION_DATASET
+GROUP BY type_of_meal_plan
+ORDER BY total_guests DESC
+LIMIT 1
+
+Run time (seconds): 0.006    
+Status            : succeeded
+
+TYPE_OF_MEAL_PLAN TOTAL_GUESTS
+----------------- ------------
+Meal Plan 1                527
+
+Question 3.
+What is the average price per room for reservations including children?
+To get the average price, I used this query to calculate the average price per room for reservations including children by filtering the data to include only those reservations where the number of children is greater than 0. The query then gets the average price per room across the specified reservations
+=======================================================================================
+SELECT AVG(avg_price_per_room) AS average_price_per_room_with_children
+FROM (
+    SELECT AVG(avg_price_per_room) AS avg_price_per_room
+    FROM HOTEL_RESERVATION_DATASET
+    WHERE no_of_children > 0
+    GROUP BY Booking_ID
+) AS subquery
+
+Run time (seconds): 0.006    
+Status            : succeeded
+
+AVERAGE_PRICE_PER_ROOM_WITH_CHILDREN
+------------------------------------
+      144.56833333333333333333333333
+
+Question 4.
+How many reservations were made for the year 2018?
+To get the number of reservations in year 2018, I used the year() function which then filtered the data set to only include reservations for the arrival year 2018.
+=======================================================================================
+SELECT COUNT(*) AS reservations_2018
+FROM HOTEL_RESERVATION_DATASET
+WHERE YEAR(arrival_date) = 2018
+
+Run time (seconds): 0.005    
+Status            : succeeded
+
+RESERVATIONS_2018
+-----------------
+              577
+
+Question 5.
+What is the most commonly booked room type?
+This query counts the number of times each room type appears in the data set, groups them and finally organizes them in a descending order. The limit 1, limits the result to just the top result which is the most commonly booked room type. =======================================================================================
+SELECT room_type_reserved, COUNT(*) AS bookings_count
+FROM HOTEL_RESERVATION_DATASET
+GROUP BY room_type_reserved
+ORDER BY bookings_count DESC
+LIMIT 1
+
+Run time (seconds): 0.005    
+Status            : succeeded
+
+ROOM_TYPE_RESERVED BOOKINGS_COUNT
+------------------ --------------
+Room_Type 1                   534
+
+Question 6.
+How many reservations fall on a weekend(no_of_weekend_nights>0)?
+In my SQL query, I used no_of_weekends>0 to only include those reservations where the number of weekend nights is greater than 0.
+=======================================================================================
+SELECT COUNT(*) AS weekend_reservations
+FROM HOTEL_RESERVATION_DATASET
+WHERE no_of_weekend_nights > 0
+
+Run time (seconds): 0.005    
+Status            : succeeded
+
+WEEKEND_RESERVATIONS
+--------------------
+                 383
+
+Question 7.
+What is the highest and lowest lead time for reservations?
+To get the highest and lowest lead time I used the max() and min() functions in my query query to select the maximum and the minimum lead time values
+=======================================================================================
+SELECT 
+    MAX(lead_time) AS highest_lead_time,
+    MIN(lead_time) AS lowest_lead_time
+FROM HOTEL_RESERVATION_DATASET
+
+Run time (seconds): 0.005    
+Status            : succeeded
+
+HIGHEST_LEAD_TIME LOWEST_LEAD_TIME
+----------------- ----------------
+              443                0
+
+Question 8
+What is the most common market segment type for reservations?
+The following query counts the number of times each market segment type appears in the data set, groups them, and then orders them in a descending manner. The limit 1 returns the top result =======================================================================================
+SELECT market_segment_type, COUNT(*) AS segment_count
+FROM HOTEL_RESERVATION_DATASET
+GROUP BY market_segment_type
+ORDER BY segment_count DESC
+LIMIT 1
+
+Run time (seconds): 0.006    
+Status            : succeeded
+
+MARKET_SEGMENT_TYPE SEGMENT_COUNT
+------------------- -------------
+Online                        518
+
+Question 9.
+How many reservations have a booking status of "Confirmed¡±?
+I used this query to filter the dataset to only include the reservations where the booking status is ¡°Confirmed¡± =======================================================================================
+SELECT COUNT(*) AS confirmed_reservations
+FROM HOTEL_RESERVATION_DATASET
+WHERE booking_status = 'Confirmed'
+
+Run time (seconds): 0.006    
+Status            : succeeded
+
+CONFIRMED_RESERVATIONS
+----------------------
+                     0
+
+Question 10.
+What is the total number of adults and children across all reservations?
+I used the SUM() function in my query to calculate the total number of adults and children in all the reservations in the data set.
+=======================================================================================
+SELECT 
+    SUM(no_of_adults) AS total_adults,
+    SUM(no_of_children) AS total_children
+FROM HOTEL_RESERVATION_DATASET
+
+Run time (seconds): 0.005    
+Status            : succeeded
+
+TOTAL_ADULTS TOTAL_CHILDREN
+------------ --------------
+        1316             69
+
+Question 11.
+What is the average number of weekend nights for reservations involving children?
+The average function in this query calculates the average number of weekend nights for reservations with the number of children being greater than 0.
+=======================================================================================
+SELECT AVG(no_of_weekend_nights) AS avg_weekend_nights_with_children
+FROM HOTEL_RESERVATION_DATASET
+WHERE no_of_children > 0
+
+Run time (seconds): 0.005    
+Status            : succeeded
+
+AVG_WEEKEND_NIGHTS_WITH_CHILDREN
+--------------------------------
+                               1
+
+Question 12.
+How many reservations were made in each month of the year?
+I used the EXTRACT() function to query the month from the arrival_date and also get the desired year(2018). I the used the COUNT() function to count the number of reservations.
+=======================================================================================
+SELECT 
+    EXTRACT(MONTH FROM arrival_date) AS month,
+    COUNT(*) AS reservations_count
+FROM HOTEL_RESERVATION_DATASET
+WHERE EXTRACT(YEAR FROM arrival_date) = 2018
+GROUP BY EXTRACT(MONTH FROM arrival_date)
+ORDER BY month
+
+Run time (seconds): 0.006    
+Status            : succeeded
+
+MONTH RESERVATIONS_COUNT
+----- ------------------
+    1                 26
+    2                 36
+    3                 59
+    4                 46
+    5                 57
+    6                 84
+    7                 33
+    8                 63
+    9                 39
+   10                 63
+   11                 40
+   12                 31
+
+Question 13.
+What is the average number of nights(both weekend and weekday) spent by guests for each room type?
+This query calculates the average number of nights both the weekend and weekday nights spent by guests for each reserved room type. It calculates the total for either columns and the average, and finally groups the results by room type.
+=======================================================================================
+SELECT 
+    room_type_reserved,
+    AVG(no_of_weekend_nights + no_of_week_nights) AS avg_nights_per_reservation
+FROM HOTEL_RESERVATION_DATASET
+GROUP BY room_type_reserved
+
+Run time (seconds): 0.006    
+Status            : succeeded
+
+ROOM_TYPE_RESERVED AVG_NIGHTS_PER_RESERVATION
+------------------ --------------------------
+Room_Type 1                                 2
+Room_Type 2                                 3
+Room_Type 4                                 3
+Room_Type 5                                 2
+Room_Type 6                                 3
+Room_Type 7                                 2
+
+Question 14.
+For reservations involving children, what is the most common room type, and what is the average price for that room type?
+To begin with this query, I had to create a CTE named Child Reservations which helps to filter the data set to only include reservations dealing with children. It then selects the type of room and the number of reservations for each room type, and the average price for the same. The query hen orders the children reservation in a descending manner and returns the top result.
+=======================================================================================
+WITH ChildReservations AS (
+    SELECT *
+    FROM HOTEL_RESERVATION_DATASET
+    WHERE no_of_children > 0
+)
+SELECT 
+    room_type_reserved,
+    COUNT(*) AS child_reservations_count,
+    AVG(avg_price_per_room) AS average_price
+FROM ChildReservations
+GROUP BY room_type_reserved
+ORDER BY child_reservations_count DESC
+LIMIT 1
+
+Run time (seconds): 0.005    
+Status            : succeeded
+
+ROOM_TYPE_RESERVED CHILD_RESERVATIONS_COUNT AVERAGE_PRICE                 
+------------------ ------------------------ ------------------------------
+Room_Type 1                              24 123.12291666666666666666666666
+
+Question 15.
+Find the market segment type that generates the highest average price per room.
+I used this query to calculate the average price for each room for every market segment, grouping it and then ordering it in a descending order with LIMIT 1 which returns only the top result. =======================================================================================
+SELECT 
+    market_segment_type,
+    AVG(avg_price_per_room) AS average_price_per_room
+FROM HOTEL_RESERVATION_DATASET
+GROUP BY market_segment_type
+ORDER BY average_price_per_room DESC
+LIMIT 1
+
+Run time (seconds): 0.005    
+Status            : succeeded
+
+MARKET_SEGMENT_TYPE AVERAGE_PRICE_PER_ROOM        
+------------------- ------------------------------
+Online              112.45521235521235521235521235
+
+
+
+
+The database
+
+Database        : crn:v1:bluemix:public:dashdb-for-transactions:eu-gb:a/77913baf846b42109d8097a9706f02e4:5c1316e5-d97b-4958-a142-bc5baea24368::
+Authorization Id: znh93602                                                                                                                     
+Run method      : JDBC                                                                                                                         
+Date            : Mar 15, 2024 2:26:55 PM                                                                                                      
+Status          : completed     
+
+The summary log for the queries for each of the questions                                                                                                              
+
+SELECT COUNT(*) AS total_reservations
+FROM HOTEL_RESERVATION_DATASET
+
+SELECT type_of_meal_plan, COUNT(*) AS total_guests
+FROM HOTEL_RESERVATION_DATASET
+GROUP BY type_of_meal_plan
+ORDER BY total_guests DESC
+LIMIT 1
+
+SELECT AVG(avg_price_per_room) AS average_price_per_room_with_children
+FROM (
+    SELECT AVG(avg_price_per_room) AS avg_price_per_room
+    FROM HOTEL_RESERVATION_DATASET
+    WHERE no_of_children > 0
+    GROUP BY Booking_ID
+) AS subquery
+
+SELECT COUNT(*) AS reservations_2018
+FROM HOTEL_RESERVATION_DATASET
+WHERE YEAR(arrival_date) = 2018
+
+SELECT room_type_reserved, COUNT(*) AS bookings_count
+FROM HOTEL_RESERVATION_DATASET
+GROUP BY room_type_reserved
+ORDER BY bookings_count DESC
+LIMIT 1
+
+SELECT COUNT(*) AS weekend_reservations
+FROM HOTEL_RESERVATION_DATASET
+WHERE no_of_weekend_nights > 0
+
+SELECT 
+    MAX(lead_time) AS highest_lead_time,
+    MIN(lead_time) AS lowest_lead_time
+FROM HOTEL_RESERVATION_DATASET
+
+SELECT market_segment_type, COUNT(*) AS segment_count
+FROM HOTEL_RESERVATION_DATASET
+GROUP BY market_segment_type
+ORDER BY segment_count DESC
+LIMIT 1
+
+SELECT COUNT(*) AS confirmed_reservations
+FROM HOTEL_RESERVATION_DATASET
+WHERE booking_status = 'Confirmed'
+
+SELECT 
+    SUM(no_of_adults) AS total_adults,
+    SUM(no_of_children) AS total_children
+FROM HOTEL_RESERVATION_DATASET
+
+SELECT AVG(no_of_weekend_nights) AS avg_weekend_nights_with_children
+FROM HOTEL_RESERVATION_DATASET
+WHERE no_of_children > 0
+
+SELECT 
+    EXTRACT(MONTH FROM arrival_date) AS month,
+    COUNT(*) AS reservations_count
+FROM HOTEL_RESERVATION_DATASET
+WHERE EXTRACT(YEAR FROM arrival_date) = 2023 
+GROUP BY EXTRACT(MONTH FROM arrival_date)
+ORDER BY month
+
+SELECT 
+    room_type_reserved,
+    AVG(no_of_weekend_nights + no_of_week_nights) AS avg_nights_per_reservation
+FROM HOTEL_RESERVATION_DATASET
+GROUP BY room_type_reserved
+
+WITH ChildReservations AS (
+    SELECT *
+    FROM HOTEL_RESERVATION_DATASET
+    WHERE no_of_children > 0
+)
+SELECT 
+    room_type_reserved,
+    COUNT(*) AS child_reservations_count,
+    AVG(avg_price_per_room) AS average_price
+FROM ChildReservations
+GROUP BY room_type_reserved
+ORDER BY child_reservations_count DESC
+LIMIT 1
+
+SELECT 
+    market_segment_type,
+    AVG(avg_price_per_room) AS average_price_per_room
+FROM HOTEL_RESERVATION_DATASET
+GROUP BY market_segment_type
+ORDER BY average_price_per_room DESC
+LIMIT 1
+
+
